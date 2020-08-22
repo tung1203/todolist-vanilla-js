@@ -3,28 +3,27 @@ import createTask from "../components/task";
 
 const TodoList = (function () {
   let id = 0;
-  let todos = [
-    {
-      id,
-      title: "Morning walk",
-      description: "Morning walk",
-      createdAt: "2011-08-19T13:45:00",
-      dueDate: "2011-08-19T13:45:00",
-      deletedAt: "",
-    },
-  ];
+  let todos = [];
 
   let loading = true;
   const init = () => {
     const btnAddTaskEl = document.getElementById("btn-add-task");
     const btnDelTaskEls = document.querySelectorAll(".task__delete");
+    const btnStatusTaskEls = document.querySelectorAll(".task__status");
 
     btnAddTaskEl.addEventListener("click", () => {
       onChange("add");
     });
+
     btnDelTaskEls.forEach((element) =>
       element.addEventListener("click", () => {
-        onChange("delete");
+        deleteTask(element.getAttribute("data-id"));
+      })
+    );
+
+    btnStatusTaskEls.forEach((element) =>
+      element.addEventListener("click", () => {
+        completeTask(element.getAttribute("data-id"));
       })
     );
   };
@@ -48,12 +47,22 @@ const TodoList = (function () {
     document.getElementById("title").value = "";
     document.getElementById("description").value = "";
 
-    document
-      .getElementById("task-list")
-      .insertAdjacentHTML(
-        "beforeend",
-        createTask(id, title, description, convertDate(from), convertDate(to))
+    let taskList = document.getElementById("task-list");
+    taskList.innerHTML = "";
+
+    let newTodos = "";
+
+    todos.forEach((element) => {
+      newTodos += createTask(
+        element.id,
+        element.title,
+        element.description,
+        convertDate(parseInt(element.from)),
+        convertDate(parseInt(element.to))
       );
+    });
+    
+    taskList.insertAdjacentHTML("beforeend", newTodos);
 
     // turn off modal
     $("#myModal").modal("toggle");
@@ -81,9 +90,8 @@ const TodoList = (function () {
   };
   //Complete task
   const completeTask = (id) => {
-    console.log(id);
     document.querySelectorAll(".task").forEach(function (e) {
-      if (e.getAttribute("data-id") === id) {
+      if (e.getAttribute("data-id") == id) {
         e.classList.toggle("complete");
       }
     });

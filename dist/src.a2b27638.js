@@ -117,79 +117,174 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
+})({"src/utils/convertDate.js":[function(require,module,exports) {
+"use strict";
 
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
-  return bundleURL;
+var convertDate = function convertDate(date) {
+  var newDate = new Date(date);
+  var day = newDate.getUTCDate(),
+      month = newDate.getUTCMonth(),
+      year = newDate.getUTCFullYear(),
+      hour = newDate.getUTCHours(),
+      minute = newDate.getUTCMinutes();
+  return "".concat(day, "/").concat(month, "/").concat(year, " ").concat(hour, ":").concat(minute);
+};
+
+var _default = convertDate;
+exports.default = _default;
+},{}],"src/components/task.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function createTask(id, title, description, from, to) {
+  return "\n  <div class=\"task\" data-id=\"".concat(id, "\">\n  <input class=\"task__status\" type=\"checkbox\" data-id=\"").concat(id, "\" />\n    <div class=\"task__content\">\n        <label class=\"task__title\" id=\"js-task-title\">").concat(title, "</label>\n        <p class=\"task__des\" id=\"js-task-des\">").concat(description, "</p>\n    </div>\n    <div class=\"task__date\">\n        <p class=\"task__from\" id=\"js-task-from\">").concat(from, "</p>\n        <p class=\"task__to\" id=\"js-task-to\">").concat(to, "</p>\n    </div>\n    <button class=\"task__delete\" data-id=\"").concat(id, "\"></button>\n  </div>\n  ");
 }
 
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+var _default = createTask;
+exports.default = _default;
+},{}],"src/containers/TodoList.js":[function(require,module,exports) {
+"use strict";
 
-    if (matches) {
-      return getBaseURL(matches[0]);
-    }
-  }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
 
-  return '/';
-}
+var _convertDate = _interopRequireDefault(require("../utils/convertDate"));
 
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
-}
+var _task = _interopRequireDefault(require("../components/task"));
 
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function updateLink(link) {
-  var newLink = link.cloneNode();
+var TodoList = function () {
+  var id = 0;
+  var todos = [];
+  var loading = true;
 
-  newLink.onload = function () {
-    link.remove();
+  var init = function init() {
+    var btnAddTaskEl = document.getElementById("btn-add-task");
+    var btnDelTaskEls = document.querySelectorAll(".task__delete");
+    var btnStatusTaskEls = document.querySelectorAll(".task__status");
+    btnAddTaskEl.addEventListener("click", function () {
+      onChange("add");
+    });
+    btnDelTaskEls.forEach(function (element) {
+      return element.addEventListener("click", function () {
+        deleteTask(element.getAttribute("data-id"));
+      });
+    });
+    btnStatusTaskEls.forEach(function (element) {
+      return element.addEventListener("click", function () {
+        completeTask(element.getAttribute("data-id"));
+      });
+    });
+  }; // Add task
+
+
+  var addTask = function addTask() {
+    id++;
+    var title = document.getElementById("title").value;
+    var description = document.getElementById("description").value;
+    var from = document.getElementById("from").value;
+    var to = document.getElementById("to").value;
+    var task = {
+      id: id,
+      title: title,
+      description: description,
+      from: from,
+      to: to
+    };
+    todos.push(task); // reset input
+
+    document.getElementById("title").value = "";
+    document.getElementById("description").value = "";
+    var taskList = document.getElementById("task-list");
+    taskList.innerHTML = "";
+    var newTodos = "";
+    todos.forEach(function (element) {
+      newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(parseInt(element.from)), (0, _convertDate.default)(parseInt(element.to)));
+    });
+    taskList.insertAdjacentHTML("beforeend", newTodos); // turn off modal
+
+    $("#myModal").modal("toggle"); //add event delete task
+
+    document.querySelectorAll(".task__delete").forEach(function (element) {
+      return element.addEventListener("click", function () {
+        deleteTask(element.getAttribute("data-id"));
+      });
+    }); //add event complete task
+
+    document.querySelectorAll(".task__status").forEach(function (element) {
+      return element.addEventListener("click", function () {
+        completeTask(element.getAttribute("data-id"));
+      });
+    });
+  }; //Delete task
+
+
+  var deleteTask = function deleteTask(id) {
+    document.querySelectorAll(".task").forEach(function (e) {
+      if (e.getAttribute("data-id") === id) {
+        e.remove();
+      }
+    });
+  }; //Complete task
+
+
+  var completeTask = function completeTask(id) {
+    document.querySelectorAll(".task").forEach(function (e) {
+      if (e.getAttribute("data-id") == id) {
+        e.classList.toggle("complete");
+      }
+    });
   };
 
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
-}
+  var onMount = function onMount() {
+    console.log(todos);
+  };
 
-var cssTimeout = null;
+  var onChange = function onChange(type, result) {
+    // Action Types
+    var ADD = "add",
+        DELETE = "delete";
 
-function reloadCSS() {
-  if (cssTimeout) {
-    return;
-  }
+    switch (type) {
+      case ADD:
+        addTask();
+        break;
 
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
-
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
-      }
+      default:
+        break;
     }
+  };
 
-    cssTimeout = null;
-  }, 50);
-}
+  return {
+    onMount: onMount,
+    onChange: onChange,
+    init: init
+  };
+}();
 
-module.exports = reloadCSS;
-},{"./bundle-url":"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"src/styles/main.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
+var _default = TodoList;
+exports.default = _default;
+},{"../utils/convertDate":"src/utils/convertDate.js","../components/task":"src/components/task.js"}],"src/index.js":[function(require,module,exports) {
+"use strict";
 
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var _TodoList = _interopRequireDefault(require("./containers/TodoList"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_TodoList.default.init();
+},{"./containers/TodoList":"src/containers/TodoList.js"}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -393,5 +488,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js"], null)
-//# sourceMappingURL=/main.847ea5f6.js.map
+},{}]},{},["C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","src/index.js"], null)
+//# sourceMappingURL=/src.a2b27638.js.map

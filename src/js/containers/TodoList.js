@@ -1,6 +1,8 @@
+import convertDate from "../utils/convertDate";
+import createTask from "../components/task";
+
 const TodoList = (function () {
   let id = 0;
-  let btnAddTask;
   let todos = [
     {
       id,
@@ -13,18 +15,21 @@ const TodoList = (function () {
   ];
 
   let loading = true;
-  init = () => {
-    document.getElementById("btn-add-task").addEventListener("click", () => {
-      this.onChange("add");
+  const init = () => {
+    const btnAddTaskEl = document.getElementById("btn-add-task");
+    const btnDelTaskEls = document.querySelectorAll(".task__delete");
+
+    btnAddTaskEl.addEventListener("click", () => {
+      onChange("add");
     });
-    document.querySelectorAll(".task__delete").forEach((element) =>
+    btnDelTaskEls.forEach((element) =>
       element.addEventListener("click", () => {
-        this.onChange("delete");
+        onChange("delete");
       })
     );
   };
   // Add task
-  addTask = () => {
+  const addTask = () => {
     id++;
     let title = document.getElementById("title").value;
     let description = document.getElementById("description").value;
@@ -43,42 +48,31 @@ const TodoList = (function () {
     document.getElementById("title").value = "";
     document.getElementById("description").value = "";
 
-    document.getElementById("task-list").insertAdjacentHTML(
-      "beforeend",
-      `
-      <div class="task" data-id="${id}">
-        <input class="task__status" type="checkbox" data-id="${id}" />
-          <div class="task__content">
-              <label class="task__title" id="js-task-title">${title}</label>
-              <p class="task__des" id="js-task-des">${description}</p>
-          </div>
-          <div class="task__date">
-              <p class="task__from" id="js-task-from">${this.convertDate(
-                from
-              )}</p>
-              <p class="task__to" id="js-task-to">${this.convertDate(to)}</p>
-          </div>
-          <button class="task__delete" data-id="${id}"></button>
-        </div>
-        `
-    );
+    document
+      .getElementById("task-list")
+      .insertAdjacentHTML(
+        "beforeend",
+        createTask(id, title, description, convertDate(from), convertDate(to))
+      );
+
+    // turn off modal
     $("#myModal").modal("toggle");
     //add event delete task
     document.querySelectorAll(".task__delete").forEach((element) =>
       element.addEventListener("click", () => {
-        this.deleteTask(element.getAttribute("data-id"));
+        deleteTask(element.getAttribute("data-id"));
       })
     );
     //add event complete task
     document.querySelectorAll(".task__status").forEach((element) =>
       element.addEventListener("click", () => {
-        this.completeTask(element.getAttribute("data-id"));
+        completeTask(element.getAttribute("data-id"));
       })
     );
   };
 
   //Delete task
-  deleteTask = (id) => {
+  const deleteTask = (id) => {
     document.querySelectorAll(".task").forEach(function (e) {
       if (e.getAttribute("data-id") === id) {
         e.remove();
@@ -86,7 +80,8 @@ const TodoList = (function () {
     });
   };
   //Complete task
-  completeTask = (id) => {
+  const completeTask = (id) => {
+    console.log(id);
     document.querySelectorAll(".task").forEach(function (e) {
       if (e.getAttribute("data-id") === id) {
         e.classList.toggle("complete");
@@ -94,31 +89,16 @@ const TodoList = (function () {
     });
   };
 
-  convertDate = (date) => {
-    var newDate = new Date(date);
-
-    const day = newDate.getUTCDate(),
-      month = newDate.getUTCMonth(),
-      year = newDate.getUTCFullYear(),
-      hour = newDate.getUTCHours(),
-      minute = newDate.getUTCMinutes();
-
-    return `${day}/${month}/${year} ${hour}:${minute}`;
-  };
-
-  onMount = () => {
+  const onMount = () => {
     console.log(todos);
   };
-  onChange = (type, result) => {
+  const onChange = (type, result) => {
     // Action Types
     const ADD = "add",
       DELETE = "delete";
     switch (type) {
       case ADD:
         addTask();
-        break;
-        // case DELETE:
-        //   deleteTask();
         break;
 
       default:
@@ -131,4 +111,4 @@ const TodoList = (function () {
     init,
   };
 })();
-TodoList.init();
+export default TodoList;

@@ -117,7 +117,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"assets/js/utils/convertDate.js":[function(require,module,exports) {
+})({"src/js/utils/convertDate.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -137,7 +137,7 @@ var convertDate = function convertDate(date) {
 
 var _default = convertDate;
 exports.default = _default;
-},{}],"assets/js/components/task.js":[function(require,module,exports) {
+},{}],"src/js/components/task.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -151,7 +151,7 @@ function createTask(id, title, description, from, to) {
 
 var _default = createTask;
 exports.default = _default;
-},{}],"assets/js/containers/TodoList.js":[function(require,module,exports) {
+},{}],"src/js/containers/TodoList.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -179,7 +179,7 @@ var TodoList = function () {
 
   var init = function init() {
     var btnAddTaskEl = document.getElementById("btn-add-task");
-    var btnDelTaskEls = document.querySelectorAll("btn-add-task");
+    var btnDelTaskEls = document.querySelectorAll(".task__delete");
     btnAddTaskEl.addEventListener("click", function () {
       onChange("add");
     });
@@ -236,6 +236,7 @@ var TodoList = function () {
 
 
   var completeTask = function completeTask(id) {
+    console.log(id);
     document.querySelectorAll(".task").forEach(function (e) {
       if (e.getAttribute("data-id") === id) {
         e.classList.toggle("complete");
@@ -255,9 +256,6 @@ var TodoList = function () {
     switch (type) {
       case ADD:
         addTask();
-        break; // case DELETE:
-        //   deleteTask();
-
         break;
 
       default:
@@ -274,7 +272,7 @@ var TodoList = function () {
 
 var _default = TodoList;
 exports.default = _default;
-},{"../utils/convertDate":"assets/js/utils/convertDate.js","../components/task":"assets/js/components/task.js"}],"assets/js/index.js":[function(require,module,exports) {
+},{"../utils/convertDate":"src/js/utils/convertDate.js","../components/task":"src/js/components/task.js"}],"src/js/index.js":[function(require,module,exports) {
 "use strict";
 
 var _TodoList = _interopRequireDefault(require("./containers/TodoList"));
@@ -282,7 +280,7 @@ var _TodoList = _interopRequireDefault(require("./containers/TodoList"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _TodoList.default.init();
-},{"./containers/TodoList":"assets/js/containers/TodoList.js"}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./containers/TodoList":"src/js/containers/TodoList.js"}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -310,7 +308,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "6033" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3741" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -486,5 +484,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","assets/js/index.js"], null)
-//# sourceMappingURL=/js.5c615dc2.js.map
+},{}]},{},["C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","src/js/index.js"], null)
+//# sourceMappingURL=/js.d818e0ef.js.map

@@ -117,172 +117,79 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"assets/js/utils/convertDate.js":[function(require,module,exports) {
-"use strict";
+})({"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
 
-var convertDate = function convertDate(date) {
-  var newDate = new Date(date);
-  var day = newDate.getUTCDate(),
-      month = newDate.getUTCMonth(),
-      year = newDate.getUTCFullYear(),
-      hour = newDate.getUTCHours(),
-      minute = newDate.getUTCMinutes();
-  return "".concat(day, "/").concat(month, "/").concat(year, " ").concat(hour, ":").concat(minute);
-};
-
-var _default = convertDate;
-exports.default = _default;
-},{}],"assets/js/components/task.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-function createTask(id, title, description, from, to) {
-  return "\n  <div class=\"task\" data-id=\"".concat(id, "\">\n  <input class=\"task__status\" type=\"checkbox\" data-id=\"").concat(id, "\" />\n    <div class=\"task__content\">\n        <label class=\"task__title\" id=\"js-task-title\">").concat(title, "</label>\n        <p class=\"task__des\" id=\"js-task-des\">").concat(description, "</p>\n    </div>\n    <div class=\"task__date\">\n        <p class=\"task__from\" id=\"js-task-from\">").concat(from, "</p>\n        <p class=\"task__to\" id=\"js-task-to\">").concat(to, "</p>\n    </div>\n    <button class=\"task__delete\" data-id=\"").concat(id, "\"></button>\n  </div>\n  ");
+  return bundleURL;
 }
 
-var _default = createTask;
-exports.default = _default;
-},{}],"assets/js/containers/TodoList.js":[function(require,module,exports) {
-"use strict";
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _convertDate = _interopRequireDefault(require("../utils/convertDate"));
-
-var _task = _interopRequireDefault(require("../components/task"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var TodoList = function () {
-  var id = 0;
-  var todos = [{
-    id: id,
-    title: "Morning walk",
-    description: "Morning walk",
-    createdAt: "2011-08-19T13:45:00",
-    dueDate: "2011-08-19T13:45:00",
-    deletedAt: ""
-  }];
-  var loading = true;
-
-  var init = function init() {
-    var btnAddTaskEl = document.getElementById("btn-add-task");
-    var btnDelTaskEls = document.querySelectorAll("btn-add-task");
-    btnAddTaskEl.addEventListener("click", function () {
-      onChange("add");
-    });
-    btnDelTaskEls.forEach(function (element) {
-      return element.addEventListener("click", function () {
-        onChange("delete");
-      });
-    });
-  }; // Add task
-
-
-  var addTask = function addTask() {
-    id++;
-    var title = document.getElementById("title").value;
-    var description = document.getElementById("description").value;
-    var from = document.getElementById("from").value;
-    var to = document.getElementById("to").value;
-    var task = {
-      id: id,
-      title: title,
-      description: description,
-      from: from,
-      to: to
-    };
-    todos.push(task); // reset input
-
-    document.getElementById("title").value = "";
-    document.getElementById("description").value = "";
-    document.getElementById("task-list").insertAdjacentHTML("beforeend", (0, _task.default)(id, title, description, (0, _convertDate.default)(from), (0, _convertDate.default)(to))); // turn off modal
-
-    $("#myModal").modal("toggle"); //add event delete task
-
-    document.querySelectorAll(".task__delete").forEach(function (element) {
-      return element.addEventListener("click", function () {
-        deleteTask(element.getAttribute("data-id"));
-      });
-    }); //add event complete task
-
-    document.querySelectorAll(".task__status").forEach(function (element) {
-      return element.addEventListener("click", function () {
-        completeTask(element.getAttribute("data-id"));
-      });
-    });
-  }; //Delete task
-
-
-  var deleteTask = function deleteTask(id) {
-    document.querySelectorAll(".task").forEach(function (e) {
-      if (e.getAttribute("data-id") === id) {
-        e.remove();
-      }
-    });
-  }; //Complete task
-
-
-  var completeTask = function completeTask(id) {
-    document.querySelectorAll(".task").forEach(function (e) {
-      if (e.getAttribute("data-id") === id) {
-        e.classList.toggle("complete");
-      }
-    });
-  };
-
-  var onMount = function onMount() {
-    console.log(todos);
-  };
-
-  var onChange = function onChange(type, result) {
-    // Action Types
-    var ADD = "add",
-        DELETE = "delete";
-
-    switch (type) {
-      case ADD:
-        addTask();
-        break; // case DELETE:
-        //   deleteTask();
-
-        break;
-
-      default:
-        break;
+    if (matches) {
+      return getBaseURL(matches[0]);
     }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
   };
 
-  return {
-    onMount: onMount,
-    onChange: onChange,
-    init: init
-  };
-}();
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
 
-var _default = TodoList;
-exports.default = _default;
-},{"../utils/convertDate":"assets/js/utils/convertDate.js","../components/task":"assets/js/components/task.js"}],"assets/js/index.js":[function(require,module,exports) {
-"use strict";
+var cssTimeout = null;
 
-var _TodoList = _interopRequireDefault(require("./containers/TodoList"));
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
 
-_TodoList.default.init();
-},{"./containers/TodoList":"assets/js/containers/TodoList.js"}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"src/styles/main.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -310,7 +217,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "6033" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3741" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -486,5 +393,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js","assets/js/index.js"], null)
-//# sourceMappingURL=/js.5c615dc2.js.map
+},{}]},{},["C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js"], null)
+//# sourceMappingURL=/main.847ea5f6.js.map

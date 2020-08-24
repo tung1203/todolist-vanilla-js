@@ -151,7 +151,74 @@ function createTask(id, title, description, from, to, complete) {
 
 var _default = createTask;
 exports.default = _default;
-},{}],"src/containers/TodoList.js":[function(require,module,exports) {
+},{}],"src/store/reducers/todo.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var initialState = [{
+  completed: false,
+  description: "34",
+  from: "2020-08-01T15:52",
+  id: 1598259171894,
+  title: "12",
+  to: "2020-08-08T15:52"
+}];
+
+var todos = function todos() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+  var action = arguments.length > 1 ? arguments[1] : undefined;
+
+  switch (action.type) {
+    case "ADD_TODO":
+      return [].concat(_toConsumableArray(state), [_objectSpread({}, action.payload)]);
+
+    case "REMOVE_TODO":
+      return state.filter(function (todo) {
+        return todo.id !== action.payload.id;
+      });
+
+    case "TOGGLE_TODO":
+      return state.map(function (todo) {
+        if (todo.id === action.payload.id) {
+          todo.completed = !todo.completed;
+        }
+
+        return todo;
+      });
+
+    case "HISTORY_TODO":
+      return state;
+
+    default:
+      return state;
+  }
+};
+
+var _default = todos;
+exports.default = _default;
+},{}],"src/store/index.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -163,182 +230,94 @@ var _convertDate = _interopRequireDefault(require("../utils/convertDate"));
 
 var _task = _interopRequireDefault(require("../components/task"));
 
+var _todo = _interopRequireDefault(require("./reducers/todo"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var TodoList = function () {
-  var id = null;
-  var todos = [];
-  var loading = true;
+var createStore = function createStore(reducer) {
+  var state;
+  var taskList = document.getElementById("task-list");
 
-  var init = function init() {
-    var data = localStorage.getItem("todos");
+  var getState = function getState() {
+    return state;
+  };
 
-    if (data) {
-      todos = JSON.parse(data);
-      todos.map(function (task) {
-        (0, _task.default)(task.id, task.title, task.description, task.from, task.to, task.complete);
-      });
-      var taskList = document.getElementById("task-list");
-      taskList.innerHTML = "";
-      var newTodos = "";
-      todos.forEach(function (element) {
-        newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to), element.complete);
-      });
-      taskList.insertAdjacentHTML("beforeend", newTodos);
-    }
+  var dispatch = function dispatch(action) {
+    state = reducer(state, action);
+    console.log(state);
+    updateHtml();
+  };
 
-    var btnAddTaskEl = document.getElementById("btn-add-task");
+  var updateHtml = function updateHtml() {
+    // console.log(state);
+    taskList.innerHTML = "";
+    var htmlString = "";
+    state.forEach(function (element) {
+      htmlString += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to), element.completed);
+    });
+    taskList.insertAdjacentHTML("beforeend", htmlString);
     var btnDelTaskEls = document.querySelectorAll(".task__delete");
-    var btnStatusTaskEls = document.querySelectorAll(".task__status");
-    document.getElementById("from").value = new Date().toISOString();
-    var history = document.getElementById("btn-history");
-    history.addEventListener("click", function () {
-      getHistory();
-    });
-    btnAddTaskEl.addEventListener("click", function () {
-      onChange("add");
-    });
     btnDelTaskEls.forEach(function (element) {
       return element.addEventListener("click", function () {
-        deleteTask(element.getAttribute("data-id"));
+        dispatch({
+          type: "REMOVE_TODO",
+          payload: {
+            id: parseInt(element.getAttribute("data-id"))
+          }
+        });
       });
     });
+    var btnStatusTaskEls = document.querySelectorAll(".task__status");
     btnStatusTaskEls.forEach(function (element) {
       return element.addEventListener("click", function () {
-        completeTask(element.getAttribute("data-id"));
-      });
-    });
-  }; // Add task
-
-
-  var addTask = function addTask() {
-    id = Date.now();
-    var title = document.getElementById("title").value;
-    var description = document.getElementById("description").value;
-    var from = document.getElementById("from").value;
-    var to = document.getElementById("to").value;
-    var task = {
-      id: id,
-      title: title,
-      description: description,
-      from: from,
-      to: to,
-      complete: false
-    };
-    todos.push(task); // reset input
-
-    document.getElementById("title").value = "";
-    document.getElementById("description").value = "";
-    var taskList = document.getElementById("task-list");
-    taskList.innerHTML = "";
-    var newTodos = "";
-    todos.forEach(function (element) {
-      newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to), element.complete);
-    });
-    taskList.insertAdjacentHTML("beforeend", newTodos); // turn off modal
-
-    $("#myModal").modal("toggle"); //add event delete task
-
-    document.querySelectorAll(".task__delete").forEach(function (element) {
-      return element.addEventListener("click", function () {
-        deleteTask(element.getAttribute("data-id"));
-      });
-    }); //add event complete task
-
-    document.querySelectorAll(".task__status").forEach(function (element) {
-      return element.addEventListener("click", function () {
-        completeTask(element.getAttribute("data-id"));
-      });
-    });
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }; //Delete task
-
-
-  var deleteTask = function deleteTask(id) {
-    document.querySelectorAll(".task").forEach(function (e) {
-      if (e.getAttribute("data-id") === id) {
-        e.remove();
-        todos = todos.filter(function (task) {
-          return task.id !== parseInt(id);
-        });
-        localStorage.setItem("todos", JSON.stringify(todos));
-      }
-    });
-  }; //Complete task
-
-
-  var completeTask = function completeTask(id) {
-    document.querySelectorAll(".task").forEach(function (e) {
-      if (e.getAttribute("data-id") == id) {
-        e.classList.toggle("complete");
-        todos = todos.map(function (task) {
-          if (task.id === parseInt(id)) {
-            task.complete = task.complete ? false : true;
+        dispatch({
+          type: "TOGGLE_TODO",
+          payload: {
+            id: parseInt(element.getAttribute("data-id"))
           }
-
-          return task;
         });
-        localStorage.setItem("todos", JSON.stringify(todos));
-      }
+      });
     });
-  }; // handle from and to history
-
-
-  var getHistory = function getHistory() {
-    var fromDate = document.getElementById("history-from-js");
-    var toDate = document.getElementById("history-to-js");
-    console.log(fromDate.value);
-    console.log(toDate.value);
-    console.log(todos);
-    var history = todos.filter(function (task) {
-      return task.from >= fromDate.value && task.to <= toDate.value;
-    });
-    var taskList = document.getElementById("task-list-history");
-    taskList.innerHTML = "";
-    var newTodos = "";
-    history.forEach(function (element) {
-      newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to), element.complete);
-    });
-    taskList.insertAdjacentHTML("beforeend", newTodos);
   };
 
-  var onMount = function onMount() {
-    console.log(todos);
-  };
-
-  var onChange = function onChange(type, result) {
-    // Action Types
-    var ADD = "add",
-        DELETE = "delete";
-
-    switch (type) {
-      case ADD:
-        addTask();
-        break;
-
-      default:
-        break;
-    }
-  };
-
+  dispatch({});
   return {
-    onMount: onMount,
-    onChange: onChange,
-    init: init
+    getState: getState,
+    dispatch: dispatch
   };
-}();
+};
 
-var _default = TodoList;
+var _default = createStore(_todo.default);
+
 exports.default = _default;
-},{"../utils/convertDate":"src/utils/convertDate.js","../components/task":"src/components/task.js"}],"src/index.js":[function(require,module,exports) {
+},{"../utils/convertDate":"src/utils/convertDate.js","../components/task":"src/components/task.js","./reducers/todo":"src/store/reducers/todo.js"}],"src/index.js":[function(require,module,exports) {
 "use strict";
 
-var _TodoList = _interopRequireDefault(require("./containers/TodoList"));
+var _index = _interopRequireDefault(require("./store/index"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_TodoList.default.init();
-},{"./containers/TodoList":"src/containers/TodoList.js"}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var btnAddTaskEl = document.getElementById("btn-add-task");
+btnAddTaskEl.addEventListener("click", function () {
+  var id = Date.now();
+  var title = document.getElementById("title").value;
+  var description = document.getElementById("description").value;
+  var from = document.getElementById("from").value;
+  var to = document.getElementById("to").value;
+
+  _index.default.dispatch({
+    type: "ADD_TODO",
+    payload: {
+      id: id,
+      title: title,
+      completed: false,
+      description: description,
+      from: from,
+      to: to
+    }
+  });
+});
+},{"./store/index":"src/store/index.js"}],"C:/Users/tung1/AppData/Local/Yarn/Data/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

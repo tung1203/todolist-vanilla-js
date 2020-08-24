@@ -57,11 +57,11 @@ const TodoList = (function () {
         element.id,
         element.title,
         element.description,
-        convertDate(parseInt(element.from)),
-        convertDate(parseInt(element.to))
+        convertDate(element.from),
+        convertDate(element.to)
       );
     });
-    
+
     taskList.insertAdjacentHTML("beforeend", newTodos);
 
     // turn off modal

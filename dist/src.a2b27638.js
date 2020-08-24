@@ -211,7 +211,7 @@ var TodoList = function () {
     taskList.innerHTML = "";
     var newTodos = "";
     todos.forEach(function (element) {
-      newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(parseInt(element.from)), (0, _convertDate.default)(parseInt(element.to)));
+      newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to));
     });
     taskList.insertAdjacentHTML("beforeend", newTodos); // turn off modal
 
@@ -312,7 +312,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "4233" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "3511" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

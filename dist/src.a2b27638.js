@@ -166,11 +166,27 @@ var _task = _interopRequireDefault(require("../components/task"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var TodoList = function () {
-  var id = 0;
+  var id = null;
   var todos = [];
   var loading = true;
 
   var init = function init() {
+    var data = localStorage.getItem("todos");
+
+    if (data) {
+      todos = JSON.parse(data);
+      todos.map(function (task) {
+        (0, _task.default)(task.id, task.title, task.description, task.from, task.to);
+      });
+      var taskList = document.getElementById("task-list");
+      taskList.innerHTML = "";
+      var newTodos = "";
+      todos.forEach(function (element) {
+        newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to));
+      });
+      taskList.insertAdjacentHTML("beforeend", newTodos);
+    }
+
     var btnAddTaskEl = document.getElementById("btn-add-task");
     var btnDelTaskEls = document.querySelectorAll(".task__delete");
     var btnStatusTaskEls = document.querySelectorAll(".task__status");
@@ -191,7 +207,7 @@ var TodoList = function () {
 
 
   var addTask = function addTask() {
-    id++;
+    id = Date.now();
     var title = document.getElementById("title").value;
     var description = document.getElementById("description").value;
     var from = document.getElementById("from").value;
@@ -228,6 +244,7 @@ var TodoList = function () {
         completeTask(element.getAttribute("data-id"));
       });
     });
+    localStorage.setItem("todos", JSON.stringify(todos));
   }; //Delete task
 
 
@@ -235,6 +252,10 @@ var TodoList = function () {
     document.querySelectorAll(".task").forEach(function (e) {
       if (e.getAttribute("data-id") === id) {
         e.remove();
+        todos = todos.filter(function (task) {
+          return task.id !== parseInt(id);
+        });
+        localStorage.setItem("todos", JSON.stringify(todos));
       }
     });
   }; //Complete task

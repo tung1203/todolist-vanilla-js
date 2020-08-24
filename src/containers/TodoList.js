@@ -2,11 +2,34 @@ import convertDate from "../utils/convertDate";
 import createTask from "../components/task";
 
 const TodoList = (function () {
-  let id = 0;
+  let id = null;
   let todos = [];
 
   let loading = true;
   const init = () => {
+    let data = localStorage.getItem("todos");
+    if (data) {
+      todos = JSON.parse(data);
+      todos.map((task) => {
+        createTask(task.id, task.title, task.description, task.from, task.to);
+      });
+      let taskList = document.getElementById("task-list");
+      taskList.innerHTML = "";
+
+      let newTodos = "";
+
+      todos.forEach((element) => {
+        newTodos += createTask(
+          element.id,
+          element.title,
+          element.description,
+          convertDate(element.from),
+          convertDate(element.to)
+        );
+      });
+
+      taskList.insertAdjacentHTML("beforeend", newTodos);
+    }
     const btnAddTaskEl = document.getElementById("btn-add-task");
     const btnDelTaskEls = document.querySelectorAll(".task__delete");
     const btnStatusTaskEls = document.querySelectorAll(".task__status");
@@ -29,7 +52,7 @@ const TodoList = (function () {
   };
   // Add task
   const addTask = () => {
-    id++;
+    id = Date.now();
     let title = document.getElementById("title").value;
     let description = document.getElementById("description").value;
     let from = document.getElementById("from").value;
@@ -78,6 +101,7 @@ const TodoList = (function () {
         completeTask(element.getAttribute("data-id"));
       })
     );
+    localStorage.setItem("todos", JSON.stringify(todos));
   };
 
   //Delete task
@@ -85,6 +109,8 @@ const TodoList = (function () {
     document.querySelectorAll(".task").forEach(function (e) {
       if (e.getAttribute("data-id") === id) {
         e.remove();
+        todos = todos.filter((task) => task.id !== parseInt(id));
+        localStorage.setItem("todos", JSON.stringify(todos));
       }
     });
   };

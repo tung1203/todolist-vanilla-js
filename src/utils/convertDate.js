@@ -1,11 +1,11 @@
 const convertDate = (date) => {
   var newDate = new Date(date);
 
-  const day = newDate.getUTCDate(),
-    month = newDate.getUTCMonth(),
-    year = newDate.getUTCFullYear(),
-    hour = newDate.getUTCHours(),
-    minute = newDate.getUTCMinutes();
+  const day = newDate.getDate(),
+    month = newDate.getMonth() + 1,
+    year = newDate.getFullYear(),
+    hour = newDate.getHours(),
+    minute = newDate.getMinutes();
 
   return `${day}/${month}/${year} ${hour}:${minute}`;
 };

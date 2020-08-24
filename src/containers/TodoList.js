@@ -11,7 +11,14 @@ const TodoList = (function () {
     if (data) {
       todos = JSON.parse(data);
       todos.map((task) => {
-        createTask(task.id, task.title, task.description, task.from, task.to);
+        createTask(
+          task.id,
+          task.title,
+          task.description,
+          task.from,
+          task.to,
+          task.complete
+        );
       });
       let taskList = document.getElementById("task-list");
       taskList.innerHTML = "";
@@ -24,7 +31,8 @@ const TodoList = (function () {
           element.title,
           element.description,
           convertDate(element.from),
-          convertDate(element.to)
+          convertDate(element.to),
+          element.complete
         );
       });
 
@@ -33,6 +41,12 @@ const TodoList = (function () {
     const btnAddTaskEl = document.getElementById("btn-add-task");
     const btnDelTaskEls = document.querySelectorAll(".task__delete");
     const btnStatusTaskEls = document.querySelectorAll(".task__status");
+    document.getElementById("from").value = new Date().toISOString();
+    const history = document.getElementById("btn-history");
+
+    history.addEventListener("click", () => {
+      getHistory();
+    });
 
     btnAddTaskEl.addEventListener("click", () => {
       onChange("add");
@@ -64,6 +78,7 @@ const TodoList = (function () {
       description,
       from,
       to,
+      complete: false,
     };
     todos.push(task);
     // reset input
@@ -81,7 +96,8 @@ const TodoList = (function () {
         element.title,
         element.description,
         convertDate(element.from),
-        convertDate(element.to)
+        convertDate(element.to),
+        element.complete
       );
     });
 
@@ -119,10 +135,45 @@ const TodoList = (function () {
     document.querySelectorAll(".task").forEach(function (e) {
       if (e.getAttribute("data-id") == id) {
         e.classList.toggle("complete");
+        todos = todos.map((task) => {
+          if (task.id === parseInt(id)) {
+            task.complete = task.complete ? false : true;
+          }
+          return task;
+        });
+        localStorage.setItem("todos", JSON.stringify(todos));
       }
     });
   };
 
+  // handle from and to history
+  const getHistory = () => {
+    let fromDate = document.getElementById("history-from-js");
+    let toDate = document.getElementById("history-to-js");
+    console.log(fromDate.value);
+    console.log(toDate.value);
+    console.log(todos);
+    let history = todos.filter(
+      (task) => task.from >= fromDate.value && task.to <= toDate.value
+    );
+    let taskList = document.getElementById("task-list-history");
+    taskList.innerHTML = "";
+
+    let newTodos = "";
+
+    history.forEach((element) => {
+      newTodos += createTask(
+        element.id,
+        element.title,
+        element.description,
+        convertDate(element.from),
+        convertDate(element.to),
+        element.complete
+      );
+    });
+
+    taskList.insertAdjacentHTML("beforeend", newTodos);
+  };
   const onMount = () => {
     console.log(todos);
   };

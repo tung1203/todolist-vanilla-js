@@ -127,11 +127,11 @@ exports.default = void 0;
 
 var convertDate = function convertDate(date) {
   var newDate = new Date(date);
-  var day = newDate.getUTCDate(),
-      month = newDate.getUTCMonth(),
-      year = newDate.getUTCFullYear(),
-      hour = newDate.getUTCHours(),
-      minute = newDate.getUTCMinutes();
+  var day = newDate.getDate(),
+      month = newDate.getMonth() + 1,
+      year = newDate.getFullYear(),
+      hour = newDate.getHours(),
+      minute = newDate.getMinutes();
   return "".concat(day, "/").concat(month, "/").concat(year, " ").concat(hour, ":").concat(minute);
 };
 
@@ -145,8 +145,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-function createTask(id, title, description, from, to) {
-  return "\n  <div class=\"task\" data-id=\"".concat(id, "\">\n  <input class=\"task__status\" type=\"checkbox\" data-id=\"").concat(id, "\" />\n    <div class=\"task__content\">\n        <label class=\"task__title\" id=\"js-task-title\">").concat(title, "</label>\n        <p class=\"task__des\" id=\"js-task-des\">").concat(description, "</p>\n    </div>\n    <div class=\"task__date\">\n        <p class=\"task__from\" id=\"js-task-from\">").concat(from, "</p>\n        <p class=\"task__to\" id=\"js-task-to\">").concat(to, "</p>\n    </div>\n    <button class=\"task__delete\" data-id=\"").concat(id, "\"></button>\n  </div>\n  ");
+function createTask(id, title, description, from, to, complete) {
+  return "\n  <div class=\"task ".concat(complete ? 'complete' : '', "\" data-id=\"").concat(id, "\">\n  <input class=\"task__status\" type=\"checkbox\" data-id=\"").concat(id, "\" />\n    <div class=\"task__content\">\n        <label class=\"task__title\" id=\"js-task-title\">").concat(title, "</label>\n        <p class=\"task__des\" id=\"js-task-des\">").concat(description, "</p>\n    </div>\n    <div class=\"task__date\">\n        <p class=\"task__from\" id=\"js-task-from\">").concat(from, "</p>\n        <p class=\"task__to\" id=\"js-task-to\">").concat(to, "</p>\n    </div>\n    <button class=\"task__delete\" data-id=\"").concat(id, "\"></button>\n  </div>\n  ");
 }
 
 var _default = createTask;
@@ -176,13 +176,13 @@ var TodoList = function () {
     if (data) {
       todos = JSON.parse(data);
       todos.map(function (task) {
-        (0, _task.default)(task.id, task.title, task.description, task.from, task.to);
+        (0, _task.default)(task.id, task.title, task.description, task.from, task.to, task.complete);
       });
       var taskList = document.getElementById("task-list");
       taskList.innerHTML = "";
       var newTodos = "";
       todos.forEach(function (element) {
-        newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to));
+        newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to), element.complete);
       });
       taskList.insertAdjacentHTML("beforeend", newTodos);
     }
@@ -190,6 +190,11 @@ var TodoList = function () {
     var btnAddTaskEl = document.getElementById("btn-add-task");
     var btnDelTaskEls = document.querySelectorAll(".task__delete");
     var btnStatusTaskEls = document.querySelectorAll(".task__status");
+    document.getElementById("from").value = new Date().toISOString();
+    var history = document.getElementById("btn-history");
+    history.addEventListener("click", function () {
+      getHistory();
+    });
     btnAddTaskEl.addEventListener("click", function () {
       onChange("add");
     });
@@ -217,7 +222,8 @@ var TodoList = function () {
       title: title,
       description: description,
       from: from,
-      to: to
+      to: to,
+      complete: false
     };
     todos.push(task); // reset input
 
@@ -227,7 +233,7 @@ var TodoList = function () {
     taskList.innerHTML = "";
     var newTodos = "";
     todos.forEach(function (element) {
-      newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to));
+      newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to), element.complete);
     });
     taskList.insertAdjacentHTML("beforeend", newTodos); // turn off modal
 
@@ -265,8 +271,35 @@ var TodoList = function () {
     document.querySelectorAll(".task").forEach(function (e) {
       if (e.getAttribute("data-id") == id) {
         e.classList.toggle("complete");
+        todos = todos.map(function (task) {
+          if (task.id === parseInt(id)) {
+            task.complete = task.complete ? false : true;
+          }
+
+          return task;
+        });
+        localStorage.setItem("todos", JSON.stringify(todos));
       }
     });
+  }; // handle from and to history
+
+
+  var getHistory = function getHistory() {
+    var fromDate = document.getElementById("history-from-js");
+    var toDate = document.getElementById("history-to-js");
+    console.log(fromDate.value);
+    console.log(toDate.value);
+    console.log(todos);
+    var history = todos.filter(function (task) {
+      return task.from >= fromDate.value && task.to <= toDate.value;
+    });
+    var taskList = document.getElementById("task-list-history");
+    taskList.innerHTML = "";
+    var newTodos = "";
+    history.forEach(function (element) {
+      newTodos += (0, _task.default)(element.id, element.title, element.description, (0, _convertDate.default)(element.from), (0, _convertDate.default)(element.to), element.complete);
+    });
+    taskList.insertAdjacentHTML("beforeend", newTodos);
   };
 
   var onMount = function onMount() {
